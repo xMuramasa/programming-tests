@@ -1,19 +1,28 @@
 class SQL:
 
-    def create(self):
-        pass
+    seq = 0
 
-    def update(self):
-        pass
+    def create(self, table_name="books", *args, **kwargs):
+        print("Creando registro nuevo")
+        print(table_name)
+        print(args)
+        print(kwargs)
+        SQL.seq += 1
+        return SQL.seq
 
-    def list(self):
-        pass
+    def update(self, record_id, table_name="books", *args, **kwargs):
+        print(f"Actulizando {table_name} con id: {record_id}")
+        print(f"Valores: {args}")
+        print(kwargs)
 
-    def retrieve(self):
-        pass
+    def list(self, table_name="books"):
+        print(f"Lista de {table_name}")
 
-    def delete(self):
-        pass
+    def retrieve(self, record_id, table_name="books"):
+        print(f"Se obtiene {record_id} desde {table_name}")
+
+    def delete(self, record_id, table_name="books"):
+        print(f"Se elimino {record_id} desde {table_name}")
 
 
 

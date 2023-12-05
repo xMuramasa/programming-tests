@@ -8,7 +8,7 @@ class SQL:
 
     seq = 0
 
-    books = {}
+    books = pd.DataFrame({'title': ['L0'], 'author': ['A0'], 'year': [0]})
 
     def create(self, table_name="books", *args, **kwargs):
         print("Creando registro nuevo")
@@ -16,33 +16,34 @@ class SQL:
         print(args)
         print(kwargs)
         SQL.seq += 1
-        self.books[SQL.seq] = {'title': args(0),
-                               'author': args(1),
-                               'year': args(2)} if len(args) > 0 else kwargs
+        new_book = args if len(args) > 0 else list(kwargs.values())
+        self.books.loc[self.seq] = new_book
         return SQL.seq
 
     def update(self, record_id, table_name="books", *args, **kwargs):
         print(f"Actulizando {table_name} con id: {record_id}")
         print(f"Valores: {args}")
         print(kwargs)
-        self.books[record_id] = {'title': args(0),
-                                 'author': args(1),
-                                 'year': args(2)} if len(args) > 0 else kwargs
+        update_book = args if len(args) > 0 else list(kwargs.values())
+        self.books.loc[record_id] = update_book
 
-    def list(self, table_name="books"):
+    def book_list(self, table_name="books"):
         print(f"Lista de {table_name}")
+        return self.books.to_dict('records')
 
     def retrieve(self, record_id, table_name="books"):
+        if record_id not in self.books.index:
+            return {}
         print(f"Se obtiene {record_id} desde {table_name}")
-        print(self.books[record_id])
+        return self.books.iloc[record_id].to_dict()
 
     def delete(self, record_id, table_name="books"):
         print(f"Se elimino {record_id} desde {table_name}")
-        del self.books[record_id]
+        self.books.drop(record_id, inplace=True)
 
     def to_string(self):
         print("Imprimiendo tabla books")
-        print(pd.DataFrame.from_dict(self.books, orient='index'))
+        print(self.books)
 
 
 class Book:
@@ -52,16 +53,19 @@ class Book:
         especificar en ese orden
     """
 
-    def get(self, id):
+    def get(self, id=None):
         db = SQL()
         try:
-            book = db.retrieve(id)
+            if id is not None:
+                books = db.retrieve(id)
+            else:
+                books = db.book_list()
         except Exception as e:
             print(f'Error retrieving book: {e}')
-            book = -1
+            books = None
         finally:
             print('db connection closed')
-        return book
+        return books
 
     def create(self, title, author, year):
         db = SQL()
@@ -77,11 +81,11 @@ class Book:
     def update(self, id, title, author, year):
         db = SQL()
         try:
-            if db.retrieve(id) != -1:
-                db.update(id, title=title, author=author, year=year)
+            if db.retrieve(id) != {}:
+                db.update(record_id=id, title=title, author=author, year=year)
             else:
                 print(f'Book with id {id} does not exist, creating new book')
-                id = db.create(title, author, year)
+                id = db.create('books', title, author, year)
         except Exception as e:
             print(f'Error updating book: {e}')
         finally:
@@ -90,7 +94,7 @@ class Book:
     def delete(self, id):
         db = SQL()
         try:
-            if db.retrieve(id) != -1:
+            if db.retrieve(id) != {}:
                 db.delete(id)
             else:
                 print(f'Book with id {id} does not exist')
@@ -105,30 +109,33 @@ if __name__ == "__main__":
     book = Book()
 
     print()
-    i = book.create("El Aleph", "Jorge L. Borges", 1949)
+    i = book.create("L1", "A1", 1)
     print(i)
     print()
-    i = book.create("La ciudad y los perros", "Mario Vargas Llosa", 1963)
+    i = book.create("L2", "A2", 3)
     print(i)
 
     print()
     db.to_string()
     print()
-    book.update(1, "El Aleph - edicion 2", "Jorge Luis Borges", 1949)
+    book.update(1, "L1 - edicion", "A1 - edicion", 2)
     print()
 
-    book.update(2, "Necronomicon", "H.P. Lovecraft", 1927)
+    book.update(3, "L3", "A3", 12)
     print()
 
     book.delete(2)
     print()
 
-    book.get(0)
+    print(book.get(0))
     print()
 
     book.delete(-1)
     print()
 
-    book.update(-3, "El Aleph - edicion", "Jorge Luis Borges", 3)
+    print(book.get())
+    print()
+
+    book.update(-3, "AAA", "BBB", 3)
 
     db.to_string()

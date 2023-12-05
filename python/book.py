@@ -46,7 +46,6 @@ class SQL:
 
 
 class Book:
-    """Aquí implementar la clase"""
     """
         clase que implementa las operaciones CRUD sobre la tabla deseada, asume que la tabla se llama books
         y que un libro siempre se trabaja con los campos title, author y year que pueden ser null, pero se deben

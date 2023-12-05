@@ -3,7 +3,6 @@ import json
 
 
 def multilevel_indexing(documents, keys):
-    """Aquí va la solución"""
     """
         func recursiva que recibe una lista de diccionarios y una lista de keys
         agrupa los diccionarios por la primera key y luego llama recursivamente

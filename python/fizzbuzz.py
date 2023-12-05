@@ -1,7 +1,6 @@
 # Aquí programa una función que resuelva el problema 1 FizzBuzz
 
 def fizzbuzz(n):
-    """Aquí va la solución"""
     """
         func que recibe un numero n y retorna una lista de numeros del 1 al n
         reemplazando los multiplos de 3 por Fizz, los multiplos de 5 por Buzz

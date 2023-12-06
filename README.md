@@ -1,5 +1,14 @@
 # Supuestos
 
+### Observaciones
+
+Para este desafío, se incluyen metodos sin pandas en los archivos:
+
+- ```book_no_pandas.py```
+- ```indexing_no_pandas.py```
+
+Para todos los casos los supuestos son los mismos que en el caso que usa pandas
+
 ## Book.py
 
 ```python
@@ -7,7 +16,6 @@ class SQL:
 
     """
         se modifico un poco esta clase para poder visualizar los resultados de las operaciones
-        se añadio un metodo to_string que muestra la tabla books en un dataframe
     """
 
 class Book:

@@ -1,5 +1,3 @@
-import pandas as pd
-
 class SQL:
     """
         se modifico un poco esta clase para poder visualizar los resultados de las operaciones
@@ -7,7 +5,7 @@ class SQL:
 
     seq = 0
 
-    books = pd.DataFrame({'title': ['L0'], 'author': ['A0'], 'year': [0]})
+    books = {}
 
     def create(self, table_name="books", *args, **kwargs):
         print("Creando registro nuevo")
@@ -15,30 +13,30 @@ class SQL:
         print(args)
         print(kwargs)
         SQL.seq += 1
-        new_book = args if len(args) > 0 else list(kwargs.values())
-        self.books.loc[self.seq] = new_book
+        new_book = list(*args) if len(args) > 0 else list(kwargs.values())
+        self.books[self.seq] = new_book
         return SQL.seq
 
     def update(self, record_id, table_name="books", *args, **kwargs):
         print(f"Actulizando {table_name} con id: {record_id}")
         print(f"Valores: {args}")
         print(kwargs)
-        update_book = args if len(args) > 0 else list(kwargs.values())
-        self.books.loc[record_id] = update_book
+        update_book = list(*args) if len(args) > 0 else list(kwargs.values())
+        self.books[record_id] = update_book
 
     def book_list(self, table_name="books"):
         print(f"Lista de {table_name}")
-        return self.books.to_dict('records')
+        return [(k, v) for k, v in self.books.items()]
 
     def retrieve(self, record_id, table_name="books"):
-        if record_id not in self.books.index:
+        if record_id not in self.books:
             return {}
         print(f"Se obtiene {record_id} desde {table_name}")
-        return self.books.iloc[record_id].to_dict()
+        return self.books[record_id]
 
     def delete(self, record_id, table_name="books"):
         print(f"Se elimino {record_id} desde {table_name}")
-        self.books.drop(record_id, inplace=True)
+        del self.books[record_id]
 
 
 class Book:
@@ -65,7 +63,7 @@ class Book:
     def create(self, title, author, year):
         db = SQL()
         try:
-            id = db.create(title=title, author=author, year=year)
+            id = db.create('books', title=title, author=author, year=year)
         except Exception as e:
             print(f'Error creating book: {e}')
             id = -1
@@ -77,10 +75,10 @@ class Book:
         db = SQL()
         try:
             if db.retrieve(id) != {}:
-                db.update(record_id=id, title=title, author=author, year=year)
+                db.update(record_id=id, table_name='books', title=title, author=author, year=year)
             else:
                 print(f'Book with id {id} does not exist, creating new book')
-                id = db.create('books', title, author, year)
+                id = db.create('books', (title, author, year))
         except Exception as e:
             print(f'Error updating book: {e}')
         finally:
